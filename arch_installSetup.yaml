@@ -1,0 +1,11 @@
+---
+- name: Apply arch install scripts and setup
+  hosts: all
+  tasks:
+    - name: Apply pacstrap
+      command:
+        cmd: 'pacstrap -K /mnt {{ basePackages }}'
+    - name: Apply genfstab
+      command:
+        cmd: genfstab -U /mnt >> /mnt/etc/fstab
+
