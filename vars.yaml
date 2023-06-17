@@ -1,0 +1,2 @@
+devicePath: /dev/vda
+basePackages: 'base linux linux-firmware grub efibootmgr man-db man-pages texinfo tldr vi vim neovim neofetch htop ranger'
