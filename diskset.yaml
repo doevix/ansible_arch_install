@@ -33,5 +33,15 @@
         state: present
     - name: Mount root
       ansible.posix.mount:
+        path: /mnt
+        src: '{{ devicePath }}2'
+        fstype: ext4
+        state: mounted
+    - name: Mount boot in root
+      ansible.posix.mount:
+        path: /mnt/boot
+        src: '{{ devicePath }}1'
+        fstype: vfat
+        state: mounted
 
 
