@@ -1,0 +1,37 @@
+---
+- name: Disk set up and mount
+  hosts: all
+  tasks:
+    - name: Create boot partition
+      community.general.parted:
+        device: '{{ devicePath }}'
+        state: present
+        label: gpt
+        number: 1
+        part_start: 1MiB
+        part_end: 301MiB
+        fs_type: fat32
+    - name: Create root partition
+      community.general.parted:
+        device: '{{ devicePath }}'
+        state: present
+        label: gpt
+        number: 2
+        part_start: 301MiB
+        part_end: 100%
+        fs_type: ext4
+    - name: Filesystem for EFI boot
+      community.general.filesystem:
+        dev: '{{ devicePath }}1'
+        fstype: vfat
+        opts: '-F32'
+        state: present
+    - name: Filesystem for root
+      community.general.filesystem:
+        dev: '{{ devicePath }}2'
+        fstype: ext4
+        state: present
+    - name: Mount root
+      ansible.posix.mount:
+
+
