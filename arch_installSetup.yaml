@@ -17,7 +17,3 @@
       line: '{{ item }}' 
       state: present
     loop: '{{ genfstab_out.stdout_lines }}'
-  - name: Set timezone to specified
-    community.general.timezone:
-      name: '{{ userTimezone }}'
-
