@@ -2,41 +2,40 @@
 - name: Disk set up and mount
   hosts: all
   tasks:
-    - name: Create boot partition
+    - name: Create partitions
       community.general.parted:
         device: '{{ devicePath }}'
         state: present
         label: gpt
-        number: 1
-        part_start: 1MiB
-        part_end: 301MiB
-        fs_type: fat32
-    - name: Create root partition
-      community.general.parted:
-        device: '{{ devicePath }}'
-        state: present
-        label: gpt
-        number: 2
-        part_start: 301MiB
-        part_end: 100%
-        fs_type: ext4
-    - name: Filesystem for EFI boot
+        number: '{{ ansible_loop.index }}'
+        part_start: '{{ item.p_start }}'
+        part_end: '{{ item.p_end }}'
+        fs_type: '{{ item.fstype }}'
+      loop_control:
+        extended: true
+      loop:
+        - { p_start: '1MiB', p_end: '301MiB', fstype: 'fat32' }
+        - { p_start: '301MiB', p_end: '100%', fstype: 'ext4' }
+
+    - name: Create filesystems
       community.general.filesystem:
-        dev: '{{ devicePath }}1'
-        fstype: vfat
-        opts: '-F32'
+        dev: '{{ devicePath }}{{ ansible_loop.index }}'
+        fstype: '{{ item.fstype }}'
+        opts: '{{ item.fs_opts }}'
         state: present
-    - name: Filesystem for root
-      community.general.filesystem:
-        dev: '{{ devicePath }}2'
-        fstype: ext4
-        state: present
+      loop_control:
+        extended: true
+      loop:
+        - { fstype: 'vfat', fs_opts: '-F32' }
+        - { fstype: 'ext4', fs_opts: '' }
+
     - name: Mount root
       ansible.posix.mount:
         path: /mnt
         src: '{{ devicePath }}2'
         fstype: ext4
         state: mounted
+
     - name: Mount boot in root
       ansible.posix.mount:
         path: /mnt/boot
