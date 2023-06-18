@@ -5,7 +5,12 @@
     - name: Apply pacstrap
       command:
         cmd: 'pacstrap -K /mnt {{ basePackages }}'
+        creates: /mnt/bin
     - name: Apply genfstab
       command:
         cmd: genfstab -U /mnt >> /mnt/etc/fstab
+        creates: /mnt/etc/fstab
+    - name: Set timezone to specified
+      community.general.timezone:
+        name: '{{ userTimezone }}'
 
