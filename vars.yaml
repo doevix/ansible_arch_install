@@ -1,3 +1,0 @@
-devicePath: /dev/vda
-basePackages: 'base linux linux-firmware grub efibootmgr man-db man-pages texinfo tldr sudo vi vim neovim neofetch htop ranger'
-userTimezone: America/Mexico_City
