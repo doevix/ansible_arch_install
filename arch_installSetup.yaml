@@ -2,15 +2,22 @@
 - name: Apply arch install scripts and setup
   hosts: all
   tasks:
-    - name: Apply pacstrap
-      command:
-        cmd: 'pacstrap -K /mnt {{ basePackages }}'
-        creates: /mnt/bin
-    - name: Apply genfstab
-      command:
-        cmd: genfstab -U /mnt >> /mnt/etc/fstab
-        creates: /mnt/etc/fstab
-    - name: Set timezone to specified
-      community.general.timezone:
-        name: '{{ userTimezone }}'
+  - name: Apply pacstrap
+    command:
+      cmd: 'pacstrap -K /mnt {{ basePackages }}'
+      creates: /mnt/bin
+  - name: Generate fstab
+    command: 
+      cmd: genfstab -U /mnt
+    register: genfstab_out
+  - name: Apply fstab
+    lineinfile:
+      path: /mnt/etc/fstab
+      backup: true
+      line: '{{ item }}' 
+      state: present
+    loop: '{{ genfstab_out.stdout_lines }}'
+  - name: Set timezone to specified
+    community.general.timezone:
+      name: '{{ userTimezone }}'
 
